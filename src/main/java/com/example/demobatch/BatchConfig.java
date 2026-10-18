@@ -58,10 +58,19 @@ public class BatchConfig {
                 .build();
     }
 
+    // LISTENER: resumen al terminar el Job
+    @Bean
+    public ResumenJobListener resumenJobListener() {
+        return new ResumenJobListener();
+    }
+
     // JOB: el proceso completo; aquí tiene un solo Step
     @Bean
-    public Job importarClientesJob(JobRepository jobRepository, Step procesarClientesStep) {
+    public Job importarClientesJob(JobRepository jobRepository,
+                                   Step procesarClientesStep,
+                                   ResumenJobListener resumenJobListener) {
         return new JobBuilder("importarClientesJob", jobRepository)
+                .listener(resumenJobListener)
                 .start(procesarClientesStep)
                 .build();
     }

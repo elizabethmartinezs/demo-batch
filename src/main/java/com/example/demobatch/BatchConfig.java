@@ -32,6 +32,12 @@ public class BatchConfig {
                 .build();
     }
 
+    // 2. PROCESSOR: transforma o descarta cada registro
+    @Bean
+    public ClienteProcessor clienteProcessor() {
+        return new ClienteProcessor();
+    }
+
     // 3. WRITER: recibe cada chunk ya procesado
     @Bean
     public ConsolaItemWriter clienteWriter() {
@@ -42,10 +48,12 @@ public class BatchConfig {
     @Bean
     public Step procesarClientesStep(JobRepository jobRepository,
                                      FlatFileItemReader<Cliente> clienteReader,
+                                     ClienteProcessor clienteProcessor,
                                      ConsolaItemWriter clienteWriter) {
         return new StepBuilder("procesarClientesStep", jobRepository)
                 .<Cliente, Cliente>chunk(10)
                 .reader(clienteReader)
+                .processor(clienteProcessor)
                 .writer(clienteWriter)
                 .build();
     }
